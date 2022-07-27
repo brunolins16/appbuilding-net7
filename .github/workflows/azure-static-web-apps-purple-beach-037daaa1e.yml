@@ -22,10 +22,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: 7.0.100-preview.7.22370.3
-          
-      - name: install wasm-tools workload
-        run: dotnet workload restore --project src/DemoApp.WebClient/DemoApp.WebClient.csproj       
+          dotnet-version: 7.0.100-preview.7.22370.3   
       
       - name: Set up dependency caching for faster builds
         uses: actions/cache@v3
@@ -35,6 +32,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nuget-
             
+          
+      - name: install wasm-tools workload
+        run: dotnet workload restore --project src/DemoApp.WebClient/DemoApp.WebClient.csproj    
+        
       - name: dotnet publish
         run: dotnet publish src/DemoApp.WebClient/DemoApp.WebClient.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
       
@@ -47,8 +48,7 @@ jobs:
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "src/DemoApp.WebClient" # App source code path
-          output_location: "${{env.DOTNET_ROOT}}/myapp/wwwroot" # Built app content directory - optional
+          app_location: "${{env.DOTNET_ROOT}}/myapp/wwwroot" # App source code path
           skip_app_build: true
           ###### End of Repository/Build Configurations ######
 
