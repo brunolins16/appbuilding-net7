@@ -18,6 +18,22 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: true
+          
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+      
+      - name: Set up dependency caching for faster builds
+        uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+            
+      - name: dotnet publish
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
       
       - name: Build And Deploy
         id: builddeploy
@@ -29,7 +45,7 @@ jobs:
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
           app_location: "src/DemoApp.WebClient" # App source code path
-          output_location: "wwwroot" # Built app content directory - optional
+          output_location: "${{env.DOTNET_ROOT}}/myapp/wwwroot" # Built app content directory - optional
           skip_app_build: true
           ###### End of Repository/Build Configurations ######
 
