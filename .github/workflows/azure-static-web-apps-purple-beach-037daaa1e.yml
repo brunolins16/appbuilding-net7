@@ -36,21 +36,13 @@ jobs:
         run: dotnet workload restore --project src/DemoApp.WebClient/DemoApp.WebClient.csproj   
         
       - name: dotnet publish
-        run: dotnet publish src/DemoApp.WebClient/DemoApp.WebClient.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish src/DemoApp.WebClient/DemoApp.WebClient.csproj -c Debug -o ${{env.DOTNET_ROOT}}/myapp        
+        
+      - name: dotnet publish
+        run: ls ${{env.DOTNET_ROOT}}/myapp
 
-      - name: Fetch action
-        id: pl
-        uses: Rishabh510/Path-lister-action@master
-        with:
-          path: "${{env.DOTNET_ROOT}}/myapp"
-          type: ".png"
-
-      - name: Output results
-        run: |
-          echo "Found ${{ steps.pl.outputs.path_count }} file(s) with this extension:"
-          for i in ${{ steps.pl.outputs.paths }}; do
-          echo $i
-          done
+      - name: dotnet publish
+        run: ls ${{env.DOTNET_ROOT}}/myapp/wwwroot
       
       - name: Build And Deploy
         id: builddeploy
