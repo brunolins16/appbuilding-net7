@@ -36,13 +36,13 @@ jobs:
         run: dotnet workload restore --project src/DemoApp.WebClient/DemoApp.WebClient.csproj   
         
       - name: dotnet publish
-        run: dotnet publish src/DemoApp.WebClient/DemoApp.WebClient.csproj -c Debug -o ${{env.DOTNET_ROOT}}/myapp        
+        run: dotnet publish src/DemoApp.WebClient/DemoApp.WebClient.csproj -c Debug -o published-app        
         
       - name: dotnet publish
-        run: ls ${{env.DOTNET_ROOT}}/myapp
+        run: ls published-app
 
       - name: dotnet publish
-        run: ls ${{env.DOTNET_ROOT}}/myapp/wwwroot
+        run: ls published-app/wwwroot
       
       - name: Build And Deploy
         id: builddeploy
@@ -52,9 +52,9 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }} # Used for Github integrations (i.e. PR comments)
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
-          app_location: '${{env.DOTNET_ROOT}}/myapp/wwwroot'
+          app_location: 'published-app'
           api_location: ''
-          output_location: ''
+          output_location: 'wwwroot'
           skip_app_build: true
           ###### End of Repository/Build Configurations ######
 
