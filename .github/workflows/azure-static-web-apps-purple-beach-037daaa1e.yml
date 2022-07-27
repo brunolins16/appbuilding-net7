@@ -22,7 +22,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-version: 7.0.100-preview.7.22370.3
       
       - name: Set up dependency caching for faster builds
         uses: actions/cache@v3
@@ -33,7 +33,7 @@ jobs:
             ${{ runner.os }}-nuget-
             
       - name: dotnet publish
-        run: dotnet publish /src/DemoApp.WebClient/DemoApp.WebClient.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish src/DemoApp.WebClient/DemoApp.WebClient.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
       
       - name: Build And Deploy
         id: builddeploy
