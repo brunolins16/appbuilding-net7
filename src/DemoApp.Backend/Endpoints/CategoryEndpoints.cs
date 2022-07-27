@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using DemoApp.Model;
+using System.Linq;
 
 namespace DemoApp.Backend.Endpoints;
 
@@ -27,7 +28,7 @@ public static class CategoryEndpoints
         .Produces<Category>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
 
-        routes.MapPut("category/{id}", async (int Id, Category category, OrderContext db) =>
+        CleanUpMetadata(routes.MapPut("category/{id}", async (int Id, Category category, OrderContext db) =>
         {
             var foundModel = await db.Categories.FindAsync(Id);
 
@@ -35,7 +36,9 @@ public static class CategoryEndpoints
             {
                 return Results.NotFound();
             }
+
             //update model properties here
+            foundModel.Name = category.Name;
 
             await db.SaveChangesAsync();
 
@@ -44,9 +47,9 @@ public static class CategoryEndpoints
         .WithTags(nameof(Category))
         .WithName("UpdateCategory")
         .Produces(StatusCodes.Status404NotFound)
-        .Produces(StatusCodes.Status204NoContent);
+        .Produces(StatusCodes.Status204NoContent));
 
-        routes.MapPost("category/", async (Category category, OrderContext db) =>
+        CleanUpMetadata(routes.MapPost("category/", async (Category category, OrderContext db) =>
         {
             db.Categories.Add(category);
             await db.SaveChangesAsync();
@@ -54,9 +57,9 @@ public static class CategoryEndpoints
         })
         .WithTags(nameof(Category))
         .WithName("CreateCategory")
-        .Produces<Category>(StatusCodes.Status201Created);
+        .Produces<Category>(StatusCodes.Status201Created));
 
-        routes.MapDelete("category/{id}", async (int Id, OrderContext db) =>
+        CleanUpMetadata(routes.MapDelete("category/{id}", async (int Id, OrderContext db) =>
         {
             if (await db.Categories.FindAsync(Id) is Category category)
             {
@@ -70,6 +73,16 @@ public static class CategoryEndpoints
         .WithTags(nameof(Category))
         .WithName("DeleteCategory")
         .Produces<Category>(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound);
+        .Produces(StatusCodes.Status404NotFound));
+    }
+
+    private static void CleanUpMetadata(RouteHandlerBuilder endpoint)
+    {
+        endpoint
+            .Add(builder => {
+                var metadata = builder.Metadata.OfType<HttpMethodMetadata>().First();
+                builder.Metadata.Remove(metadata);
+            });
+
     }
 }

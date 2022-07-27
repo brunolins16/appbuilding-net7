@@ -1,0 +1,78 @@
+﻿@using DemoApp.WebClient.Models
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+@page "/categories"
+@inject IHttpClientFactory HttpFactory
+@inject NavigationManager NavManager
+
+<div class="nav-item px-3">
+    <NavLink class="nav-link" href="categories/new" Match="NavLinkMatch.All">
+        <span class="oi oi-plus" aria-hidden="true"></span> New Category
+    </NavLink>
+</div>
+
+<div class="grid" tabindex="-1">
+    <QuickGrid ItemsProvider="@categoryProvider" @ref="myGrid">
+        <PropertyColumn Property="@(c => c.Id)" />
+        <PropertyColumn Property="@(c => c.Name)" />
+        <TemplateColumn Title="Actions">
+            <button class="btn-warning" @onclick="@(() => Delete(context))">Delete</button>
+            <button class="btn-primary" @onclick="@(() => Edit(context))">Edit</button>
+        </TemplateColumn>
+    </QuickGrid>
+</div>
+
+<ConfirmationModal Title="Confirm Delete" Message="Are you sure you want to delete?" OnSaveChanges="Delete" @ref="Modal"></ConfirmationModal>
+
+@code {
+    Category? _selectedCategory;
+    ConfirmationModal Modal;
+    GridItemsProvider<Category>? categoryProvider;
+    QuickGrid<Category> myGrid;
+
+    protected override Task OnInitializedAsync()
+    {
+        categoryProvider = async req =>
+        {
+            var client = HttpFactory.CreateClient("backend-api");
+            var url = NavManager.GetUriWithQueryParameters("api/category", new Dictionary<string, object?> {
+                { "skip", req.StartIndex },
+                { "limit", req.Count },
+            });
+
+            var response = await client.GetFromJsonAsync<Category[]>(url, req.CancellationToken);
+
+            return GridItemsProviderResult.From(
+                items: response!,
+                totalItemCount: response!.Length);
+
+        };
+
+        return Task.CompletedTask;
+    }
+
+    async Task Delete()
+    {
+        var client = HttpFactory.CreateClient("backend-api");
+        var response = await client.DeleteAsync($"api/category/{ _selectedCategory.Id }");
+
+        if  (response.IsSuccessStatusCode)
+        {
+            _selectedCategory = null;
+            Modal.Close();
+        }
+
+        await myGrid.RefreshDataAsync();
+    }
+
+    void Delete(Category category)
+    {
+        _selectedCategory = category;
+        Modal.Show();
+    }
+
+    void Edit(Category category)
+    {
+        NavManager.NavigateTo($"/categories/edit/{ category.Id }");
+    }
+}

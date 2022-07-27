@@ -1,0 +1,35 @@
+﻿@using DemoApp.WebClient.Models
+
+@page "/categories/new"
+@inject IHttpClientFactory HttpFactory
+@inject NavigationManager NavManager
+
+<EditForm Model="@category" OnValidSubmit="@HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <label>
+        Name:
+        <InputText id="name" @bind-Value="category.Name" />
+    </label>    
+
+    <button type="submit">Submit</button>
+</EditForm>
+
+
+@code {
+    private Category category = new();
+
+    private async Task HandleValidSubmit()
+    {
+        var client = HttpFactory.CreateClient("backend-api");
+        var response = await client.PostAsJsonAsync($"api/category", category);
+
+        if (response.IsSuccessStatusCode)
+        {
+            NavManager.NavigateTo("/categories");            
+        }
+
+        // Process the valid form
+    }
+}
