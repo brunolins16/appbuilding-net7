@@ -23,6 +23,9 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: 7.0.100-preview.7.22370.3
+          
+      - name: wasm-pack-action
+        uses: jetli/wasm-pack-action@v0.3.0
       
       - name: Set up dependency caching for faster builds
         uses: actions/cache@v3
