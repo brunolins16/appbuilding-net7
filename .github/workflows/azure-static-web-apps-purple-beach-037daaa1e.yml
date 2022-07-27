@@ -38,6 +38,20 @@ jobs:
         
       - name: dotnet publish
         run: dotnet publish src/DemoApp.WebClient/DemoApp.WebClient.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        
+      - name: Fetch action
+        id: pl
+        uses: Rishabh510/Path-lister-action@master
+        with:
+          path: "${{env.DOTNET_ROOT}}/myapp/wwwroot"
+          type: ".png"
+
+      - name: Output results
+        run: |
+          echo "Found ${{ steps.pl.outputs.path_count }} file(s) with this extension:"
+          for i in ${{ steps.pl.outputs.paths }}; do
+          echo $i
+          done
       
       - name: Build And Deploy
         id: builddeploy
@@ -48,7 +62,7 @@ jobs:
           action: "upload"
           ###### Repository/Build Configurations - These values can be configured to match your app requirements. ######
           # For more information regarding Static Web App workflow configurations, please visit: https://aka.ms/swaworkflowconfig
-          app_location: "${{env.DOTNET_ROOT}}/myapp/wwwroot" # App source code path
+          app_location: "${{env.DOTNET_ROOT}}/myapp" # App source code path
           skip_app_build: true
           ###### End of Repository/Build Configurations ######
 
