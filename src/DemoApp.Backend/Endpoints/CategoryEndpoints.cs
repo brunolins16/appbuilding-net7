@@ -79,7 +79,8 @@ public static class CategoryEndpoints
     private static void CleanUpMetadata(RouteHandlerBuilder endpoint)
     {
         endpoint
-            .Add(builder => {
+            .Add(builder =>
+            {
                 var metadata = builder.Metadata.OfType<HttpMethodMetadata>().First();
                 builder.Metadata.Remove(metadata);
             });

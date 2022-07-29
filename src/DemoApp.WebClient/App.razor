@@ -1,4 +1,7 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿@using DemoApp.Components.Auth.Shared
+@using DemoApp.Components.Shared
+
+<Router AppAssembly="@typeof(App).Assembly" AdditionalAssemblies="new [] { typeof(DemoApp.Components.Pages.Index).Assembly, typeof(DemoApp.Components.Auth.Pages.Authentication).Assembly }">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
             <NotAuthorized>
